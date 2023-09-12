@@ -1,9 +1,16 @@
-import { Float, OrbitControls } from '@react-three/drei';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+	Float,
+	OrbitControls,
+	PerspectiveCamera,
+	useScroll,
+} from '@react-three/drei';
 import Background from './Background';
 import { Airplane } from './Airplane';
 import { Cloud } from './Cloud';
 import * as THREE from 'three';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 const LINE_NB_POINTS = 12000;
 
@@ -40,18 +47,60 @@ export const Experience = () => {
 		return shape;
 	}, []);
 
+	const cameraGroup = useRef<any>();
+	const scroll = useScroll();
+
+	useFrame((_state, delta) => {
+		const currentPointIndex = Math.min(
+			Math.round(scroll.offset * linePoints.length),
+			linePoints.length - 1
+		);
+		const currentPoint = linePoints[currentPointIndex];
+		const pointAhead =
+			linePoints[Math.min(linePoints.length - 1, currentPointIndex + 1)];
+		const xDisplacement = (pointAhead.x - currentPoint.x) * 80;
+
+		const angleRotate =
+			(xDisplacement < 0 ? 1 : -1) *
+			Math.min(Math.abs(xDisplacement), Math.PI / 3);
+		const targeAirplaneQuaternion = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				airplane.current.position.x,
+				airplane.current.position.y,
+				angleRotate
+			)
+		);
+		const targetCameraQuaternion = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				cameraGroup.current.rotation.x,
+				angleRotate,
+				cameraGroup.current.rotation.z
+			)
+		);
+		cameraGroup.current.quaternion.slerp(targetCameraQuaternion, delta * 2);
+		airplane.current.quaternion.slerp(targeAirplaneQuaternion, delta * 2);
+		cameraGroup.current.position.lerp(currentPoint, delta * 24);
+	});
+
+	const airplane = useRef<any>();
+
 	return (
 		<>
-			<OrbitControls enableZoom={false} />
-			<Background />
+			{/* <OrbitControls enableZoom={false} /> */}
 
-			<Float floatIntensity={2} speed={2}>
-				<Airplane
-					rotation-y={Math.PI / 2}
-					scale={[0.2, 0.2, 0.2]}
-					position-y={0.1}
-				/>
-			</Float>
+			<group ref={cameraGroup}>
+				<PerspectiveCamera position={[0, 0, 5]} makeDefault fov={30} />
+				<Background />
+				<group ref={airplane}>
+					<Float floatIntensity={2} speed={2}>
+						<Airplane
+							rotation-y={Math.PI / 2}
+							scale={[0.2, 0.2, 0.2]}
+							position-y={0.1}
+						/>
+					</Float>
+				</group>
+			</group>
 
 			{/* LINE */}
 			<group position-y={-2}>
