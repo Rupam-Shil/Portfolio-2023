@@ -18,7 +18,7 @@ function Background() {
 						colorB={'white'}
 						axes="y"
 						start={0}
-						end={0.5}
+						end={-0.5}
 					></Gradient>
 				</LayerMaterial>
 			</Sphere>
