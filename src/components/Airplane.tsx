@@ -13,18 +13,25 @@ export function Airplane(props: GroupProps) {
 		if (helix.current) helix.current.rotation.x += delta * HELIX_SPEED;
 	});
 	return (
-		<group {...props} dispose={null}>
-			<mesh
-				geometry={nodes.PUSHILIN_Plane_Circle000.geometry}
-				material={materials.plane}
-			/>
-			<mesh
-				ref={helix}
-				geometry={nodes.PUSHILIN_Plane_Helix.geometry}
-				material={materials.plane}
-				position={[1.09, 0.23, 0]}
-			/>
-		</group>
+		<>
+			<directionalLight position={[0, 3, 1]} intensity={0.1} />
+			<group {...props} dispose={null}>
+				<mesh
+					geometry={nodes.PUSHILIN_Plane_Circle000.geometry}
+					material={materials.plane}
+				>
+					<meshStandardMaterial color={'white'} />
+				</mesh>
+				<mesh
+					ref={helix}
+					geometry={nodes.PUSHILIN_Plane_Helix.geometry}
+					material={materials.plane}
+					position={[1.09, 0.23, 0]}
+				>
+					<meshStandardMaterial color={'white'} />
+				</mesh>
+			</group>
+		</>
 	);
 }
 
