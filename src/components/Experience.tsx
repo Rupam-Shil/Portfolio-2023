@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Float, PerspectiveCamera, Text, useScroll } from '@react-three/drei';
 import Background from './Background';
@@ -6,35 +7,46 @@ import { Cloud } from './Cloud';
 import * as THREE from 'three';
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import TextSection from './TextSection';
 
 const LINE_NB_POINTS = 1000;
-const CURVED_DISTANCE = 250;
+const CURVE_DISTANCE = 250;
 const CURVE_AHEAD_CAMERA = 0.008;
 const CURVE_AHEAD_AIRPLANE = 0.02;
 const AIRPLANE_MAX_ANGLE = 35;
 
 export const Experience = () => {
+	const curvePoints = useMemo(
+		() => [
+			new THREE.Vector3(0, 0, 0),
+			new THREE.Vector3(0, 0, -CURVE_DISTANCE),
+			new THREE.Vector3(100, 0, -2 * CURVE_DISTANCE),
+			new THREE.Vector3(-100, 0, -3 * CURVE_DISTANCE),
+			new THREE.Vector3(100, 0, -4 * CURVE_DISTANCE),
+			new THREE.Vector3(0, 0, -5 * CURVE_DISTANCE),
+			new THREE.Vector3(0, 0, -6 * CURVE_DISTANCE),
+			new THREE.Vector3(0, 0, -7 * CURVE_DISTANCE),
+		],
+		[]
+	);
+
 	const curve = useMemo(() => {
-		return new THREE.CatmullRomCurve3(
-			[
-				new THREE.Vector3(0, 0, 0),
-				new THREE.Vector3(0, 0, -CURVED_DISTANCE),
-				new THREE.Vector3(100, 0, -2 * CURVED_DISTANCE),
-				new THREE.Vector3(-100, 0, -3 * CURVED_DISTANCE),
-				new THREE.Vector3(100, 0, -4 * CURVED_DISTANCE),
-				new THREE.Vector3(0, 0, -5 * CURVED_DISTANCE),
-				new THREE.Vector3(0, 0, -6 * CURVED_DISTANCE),
-				new THREE.Vector3(0, 0, -7 * CURVED_DISTANCE),
-			],
-			false,
-			'catmullrom',
-			0.5
-		);
+		return new THREE.CatmullRomCurve3(curvePoints, false, 'catmullrom', 0.5);
 	}, []);
 
-	// const linePoints = useMemo(() => {
-	// 	return curve.getPoints(LINE_NB_POINTS);
-	// }, [curve]);
+	const textSectionData = useMemo(() => {
+		return [
+			{
+				position: new THREE.Vector3(
+					curvePoints[1].x - 3,
+					curvePoints[1].y,
+					curvePoints[1].z
+				),
+				subtitle: `Welcome to Wawatmos,
+				Have a seat and enjoy the ride!`,
+			},
+		];
+	}, []);
 
 	const shape = useMemo(() => {
 		const shape = new THREE.Shape();
@@ -125,46 +137,6 @@ export const Experience = () => {
 			</group>
 
 			{/* Text */}
-			<group position={[-3, 0, -100]}>
-				<Text
-					color={'white'}
-					anchorX={'left'}
-					anchorY={'middle'}
-					fontSize={0.22}
-					maxWidth={2.5}
-					font={'/fonts/Primary-bold.ttf'}
-				>
-					Dive into Rupam Shil's Portfolio{'\n'}
-					Have a seat and enjoy the tour!
-				</Text>
-			</group>
-			<group position={[-10, 0, -200]}>
-				<Text
-					color={'white'}
-					anchorX={'left'}
-					anchorY={'middle'}
-					fontSize={0.52}
-					maxWidth={2.5}
-					font={'/fonts/Primary-bold.ttf'}
-				>
-					About Me
-				</Text>
-				<Text
-					color={'white'}
-					anchorX={'left'}
-					anchorY={'top'}
-					position-y={-0.56}
-					fontSize={0.22}
-					maxWidth={4}
-					font={'/fonts/Secondary-bold.ttf'}
-				>
-					I am a dedicated Full Stack Developer who combines technical expertise
-					with problem-solving skills, effective communication, and a
-					collaborative mindset. I am committed to delivering outstanding web
-					and mobile applications and staying at the forefront of the
-					ever-evolving technology landscape.
-				</Text>
-			</group>
 
 			{/* LINE */}
 			<group position-y={-2}>
