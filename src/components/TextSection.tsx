@@ -4,17 +4,39 @@ import { GroupProps } from '@react-three/fiber';
 function TextSection({
 	title,
 	subTitle,
+	badge,
+	subTitleFontSize,
 	...props
-}: { title?: string; subTitle: string } & GroupProps) {
+}: {
+	title?: string;
+	subTitle: string;
+	badge?: string;
+	subTitleFontSize?: number;
+} & GroupProps) {
 	return (
 		<group {...props}>
+			{badge && (
+				<Text
+					font={'/fonts/Primary-bold.ttf'}
+					anchorX={'left'}
+					fontSize={0.1}
+					color={'white'}
+					anchorY={'bottom'}
+					maxWidth={4}
+					position-y={0.5}
+				>
+					{badge}
+				</Text>
+			)}
 			{title && (
 				<Text
 					color={'white'}
 					anchorX={'left'}
-					anchorY={'middle'}
-					fontSize={0.52}
-					maxWidth={2.5}
+					anchorY={'bottom'}
+					fontSize={0.35}
+					maxWidth={3.5}
+					lineHeight={1}
+					position-y={0.08}
 					font={'/fonts/Primary-bold.ttf'}
 				>
 					{title}
@@ -24,8 +46,7 @@ function TextSection({
 				color={'white'}
 				anchorX={'left'}
 				anchorY={'top'}
-				position-y={-0.56}
-				fontSize={0.22}
+				fontSize={subTitleFontSize || 0.2}
 				maxWidth={4}
 				font={'/fonts/Secondary-bold.ttf'}
 			>
